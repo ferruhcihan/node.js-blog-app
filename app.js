@@ -7,6 +7,7 @@ const port = 3000;
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
+const moment = require("moment");
 
 mongoose.connect("mongodb://127.0.0.1/nodeblog_db", {
   useNewUrlParser: true,
@@ -17,7 +18,15 @@ app.use(fileUpload());
 
 app.use(express.static("public"));
 
-app.engine("handlebars", exphbs.engine());
+const hbs = exphbs.create({
+  helpers: {
+    generateDate(date, format) {
+      return moment(date).format(format);
+    },
+  },
+});
+
+app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
 
 // parse application/x-www-form-urlencoded

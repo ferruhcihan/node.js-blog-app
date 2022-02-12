@@ -12,4 +12,25 @@ router.post("/register", (req, res) => {
   });
 });
 
+router.get("/login", (req, res) => {
+  res.render("pages/login");
+});
+
+router.post("/login", (req, res) => {
+  const { email, password } = req.body;
+
+  User.findOne({ email }, (error, user) => {
+    if (user) {
+      if (user.password === password) {
+        // USER SESSION
+        res.redirect("/");
+      } else {
+        res.redirect("/users/login");
+      }
+    } else {
+      res.redirect("/users/register");
+    }
+  });
+});
+
 module.exports = router;

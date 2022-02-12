@@ -8,11 +8,25 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 const generateDate = require("./helpers/generateDate").generateDate;
+const expressSession = require("express-session");
+const connectMongo = require("connect-mongo");
 
 mongoose.connect("mongodb://127.0.0.1/nodeblog_db", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  // useCreateIndex: true,
 });
+
+const mongoStore = connectMongo(expressSession);
+
+app.use(
+  expressSession({
+    secret: "verysecretkey",
+    resave: false,
+    saveUninitialized: true,
+    store: new mongoStore({ mongooseConnection: mongoose.connection }),
+  })
+);
 
 app.use(fileUpload());
 

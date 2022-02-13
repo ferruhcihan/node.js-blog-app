@@ -28,6 +28,13 @@ app.use(
   })
 );
 
+// Flash Message Middleware
+app.use((req, res, next) => {
+  res.locals.sessionFlash = req.session.sessionFlash;
+  delete req.session.sessionFlash;
+  next();
+});
+
 app.use(fileUpload());
 
 app.use(express.static("public"));
@@ -40,6 +47,22 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(bodyParser.json());
+
+// Display Links Middleware
+app.use((req, res, next) => {
+  const { userId } = req.session;
+
+  if (userId) {
+    res.locals = {
+      displayLink: true,
+    };
+  } else {
+    res.locals = {
+      displayLink: false,
+    };
+  }
+  next();
+});
 
 const main = require("./routes/main");
 const posts = require("./routes/posts");

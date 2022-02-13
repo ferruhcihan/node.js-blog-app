@@ -8,7 +8,11 @@ router.get("/register", (req, res) => {
 
 router.post("/register", (req, res) => {
   User.create(req.body, (error, user) => {
-    res.redirect("/");
+    req.session.sessionFlash = {
+      type: "alert alert-success",
+      message: "User is created successfully",
+    };
+    res.redirect("/users/login");
   });
 });
 
@@ -30,6 +34,12 @@ router.post("/login", (req, res) => {
     } else {
       res.redirect("/users/register");
     }
+  });
+});
+
+router.get("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/");
   });
 });
 

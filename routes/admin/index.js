@@ -9,6 +9,7 @@ router.get("/", (req, res) => {
 router.get("/categories", (req, res) => {
   Category.find({})
     .lean()
+    .sort({ $natural: -1 })
     .then((categories) => {
       res.render("admin/categories", { categories: categories });
     });
@@ -19,6 +20,12 @@ router.post("/categories", (req, res) => {
     if (!error) {
       res.redirect("categories");
     }
+  });
+});
+
+router.delete("/categories/:id", (req, res) => {
+  Category.remove({ _id: req.params.id }).then(() => {
+    res.redirect("/admin/categories");
   });
 });
 

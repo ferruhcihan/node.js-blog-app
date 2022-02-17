@@ -24,7 +24,17 @@ router.get("/:id", (req, res) => {
       Category.find({})
         .lean()
         .then((categories) => {
-          res.render("pages/post", { post: post, categories: categories });
+          Post.find({})
+            .populate({ path: "author", model: User })
+            .lean()
+            .sort({ $natural: -1 })
+            .then((posts) => {
+              res.render("pages/post", {
+                post: post,
+                categories: categories,
+                posts: posts,
+              });
+            });
         });
     });
 });

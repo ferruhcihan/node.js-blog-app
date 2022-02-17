@@ -14,11 +14,25 @@ router.get("/blog", (req, res) => {
     .lean()
     .sort({ $natural: -1 })
     .then((posts) => {
-      Category.find({})
-        .lean()
-        .then((categories) => {
-          res.render("pages/blog", { posts: posts, categories: categories });
-        });
+      Category.aggregate([
+        {
+          $lookup: {
+            from: "posts",
+            localField: "_id",
+            foreignField: "category",
+            as: "posts",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            name: 1,
+            num_of_posts: { $size: "$posts" },
+          },
+        },
+      ]).then((categories) => {
+        res.render("pages/blog", { posts: posts, categories: categories });
+      });
     });
 });
 

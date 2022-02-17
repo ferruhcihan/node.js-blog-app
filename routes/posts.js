@@ -21,21 +21,35 @@ router.get("/:id", (req, res) => {
     .populate({ path: "author", model: User })
     .lean()
     .then((post) => {
-      Category.find({})
-        .lean()
-        .then((categories) => {
-          Post.find({})
-            .populate({ path: "author", model: User })
-            .lean()
-            .sort({ $natural: -1 })
-            .then((posts) => {
-              res.render("pages/post", {
-                post: post,
-                categories: categories,
-                posts: posts,
-              });
+      Category.aggregate([
+        {
+          $lookup: {
+            from: "posts",
+            localField: "_id",
+            foreignField: "category",
+            as: "posts",
+          },
+        },
+        {
+          $project: {
+            _id: 1,
+            name: 1,
+            num_of_posts: { $size: "$posts" },
+          },
+        },
+      ]).then((categories) => {
+        Post.find({})
+          .populate({ path: "author", model: User })
+          .lean()
+          .sort({ $natural: -1 })
+          .then((posts) => {
+            res.render("pages/post", {
+              post: post,
+              categories: categories,
+              posts: posts,
             });
-        });
+          });
+      });
     });
 });
 

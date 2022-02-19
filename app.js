@@ -7,7 +7,7 @@ const port = 3000;
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
-const { generateDate, limit, truncate } = require("./helpers/hbs");
+const { generateDate, limit, truncate, paginate } = require("./helpers/hbs");
 const expressSession = require("express-session");
 const connectMongo = require("connect-mongo");
 const methodOverride = require("method-override");
@@ -36,7 +36,7 @@ app.use(methodOverride("_method"));
 // handlebars helpers
 
 const hbs = exphbs.create({
-  helpers: { generateDate, limit, truncate },
+  helpers: { generateDate, limit, truncate, paginate },
 });
 
 app.engine("handlebars", hbs.engine);
